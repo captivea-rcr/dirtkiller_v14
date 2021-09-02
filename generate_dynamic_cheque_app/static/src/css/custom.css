@@ -1,0 +1,12 @@
+/* --- Fonts ---  */
+
+@font-face{
+    font-family: 'MICR';
+    src: url(../fonts/MICR.otf);
+}
+
+.font_value {
+	font-family: MICR;
+	padding: 200px;
+	font-size: 50px;
+}

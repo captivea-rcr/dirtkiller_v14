@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<template id="assests_backend" name="report_assest" inherit_id="web.assets_frontend">
+			<xpath expr="." position="inside">
+				<link rel="stylesheet" href="/generate_dynamic_cheque_app/static/src/css/custom.css"/>
+			</xpath>
+		</template>
+		<template id= "dynamic_check_print_wiz">
+			 <t t-call="web.basic_layout">
+	            <style type="text/css">
+	                @font-face {
+		                font-family: 'MICR';
+		                src: local('MICR'),
+		                url(/generate_dynamic_cheque_app/static/src/fonts/MICR.otf)format('truetype');
+	                }
+	                .font_class {
+	                	font-family: "MICR";
+	                }
+	            </style>
+
+	            <table class="table" style="margin-top:50px; position:absolute;font-family:Times New Roman, Times, serif;font-size:20px;">
+	                <tbody class="sale_tbody">
+	                    <t t-foreach="get_account_invoice(payment)" t-as="line">
+	                        <tr>
+	                            <td class="text-right" style="width:12%;font-family:Times New Roman, Times, serif;">&#160;</td>
+	                            <td class="text-left" style="width:12%;font-family:Times New Roman, Times, serif;">
+	                            	<span t-esc="line.ref" />
+	                            </td>
+	                            <td class="text-left" style="width:17%;font-family:Times New Roman, Times, serif;">
+	                            	<span t-esc="line.name" />
+	                            </td>
+	                            <td class="text-left" style="width:12%;font-family:Times New Roman, Times, serif;">
+	                            	<span t-esc="line.invoice_date" />
+	                            </td>
+	                            <td class="text-center" style="width:17%;font-family:Times New Roman, Times, serif;">
+	                            	<span t-esc="'{:,.2f}'.format(line.amount_total)" />
+	                            </td>
+	                            <td class="text-right" style="width:12%;font-family:Times New Roman, Times, serif;">&#160;</td>
+	                            <td class="text-right" style="width:18%;font-family:Times New Roman, Times, serif;">&#160;</td>
+	                        </tr>
+	                    </t>
+	                </tbody>
+	            </table>
+				<div style="margin-top:680px; position:absolute;font-family:Times New Roman, Times, serif;">
+					<div style="padding:10px;max-width:10%;float:left;">
+						<img t-att-src="'data:image/png;base64,%s' % to_text(cheque_format.company_image_medium)" style="max-width:120%;height:100px;"/>
+					</div>
+					<div style="float:left;margin-top:10px;"> 
+						<t t-if="cheque_format.comapny_name == True"> 
+							<b><span t-esc="cheque_format.cn_company_name" t-att-style="'font-size:' + str(cheque_format.comp_font_size) + 'px;'+'margin-left:' + str(cheque_format.comp_left_margin) + 'px;'+ 'margin-bottom: 50px;' + 'align:left;'" /></b>
+							<br/>
+							<span t-esc="cheque_format.cn_street" t-att-style="'font-size:' + str(cheque_format.comp_font_size) + 'px;'+'margin-top:' + str(cheque_format.comp_top_margin) + 'px;'+'margin-left:' + str(cheque_format.comp_left_margin) + 'px;'" />
+							<br/>
+							<span t-esc="cheque_format.cn_street2" t-att-style="'font-size:' + str(cheque_format.comp_font_size) + 'px;'+'margin-top:' + str(cheque_format.comp_top_margin) + 'px;'+'margin-left:' + str(cheque_format.comp_left_margin) + 'px;'" />
+							<br/>
+							<span t-esc="cheque_format.cn_phone" t-att-style="'font-size:' + str(cheque_format.comp_font_size) + 'px;'+'margin-top:' + str(cheque_format.comp_top_margin) + 'px;'+'margin-left:' + str(cheque_format.comp_left_margin) + 'px;'" />
+							<br/>
+							<span t-esc="cheque_format.cn_fax" t-att-style="'font-size:' + str(cheque_format.comp_font_size) + 'px;'+'margin-top:' + str(cheque_format.comp_top_margin) + 'px;'+'margin-left:' + str(cheque_format.comp_left_margin) + 'px;'" />
+							<br/>
+						</t>
+					</div>
+					<br/>
+					<div t-att-style="'margin-left:' + str(cheque_format.left_margin) + 'px;' + 'width:50%;' + 'margin-top:145px;'">
+						<table>
+							<tbody>	
+								<td style="padding-left:60px;text-align:right;">
+									<b>
+										<span t-esc="payment.date.strftime('%m-%d-%Y')" t-att-style="'font-size:' + str(cheque_format.font_size) + 'px;'+'margin-top:' + str(cheque_format.top_margin) + 'px;' + 'display: inline-block' + 'margin: 0px;' + 'margin-left:2px;'"></span>
+									</b>
+								</td>
+								<td style="padding-left:135px;max-width: 40em;text-align:center;">
+									<b>
+										<span t-esc="get_rendom_check_no(payment)" t-att-style="'font-size:' + str(cheque_format.font_size) + 'px;'+'margin-top:' + str(cheque_format.top_margin) +'px;' + 'display: inline-block'+ 'margin: 0px;'" />
+									</b>
+								</td>
+								<td style="padding-left:175px;max-width: 40em;text-align:center;">
+									<b>
+	 									<t t-if="cheque_format.af_currency_symbol == True and 		cheque_format.af_currency_symbol_position == 'before'">
+											<span t-esc="payment.partner_id.company_id.currency_id.symbol" />
+										</t> 
+										<span t-esc="'{:,.2f}'.format(payment.amount)" t-att-style="'font-size:' + str(cheque_format.font_size) + 'px;'+'margin-top:' + str(cheque_format.af_top_margin) + 'px;'+'margin-left:' + str(cheque_format.af_left_margin) + 'px;'+'width:' + str(cheque_format.af_width) + 'px;'"/>
+										<t t-if="cheque_format.af_currency_symbol == True and cheque_format.af_currency_symbol_position == 'after'"> 
+											<span t-esc="payment.partner_id.company_id.currency_id.symbol" /> 
+										</t>
+									</b>
+								</td>
+							</tbody>
+						</table>
+					</div>
+					<div class="row" t-att-style="'margin-top:' + str(cheque_format.ac_top_margin) + 'px;'+ 'px;'+'margin-bottom :'+'0 px;'">
+						<div class="col-12">  
+							<t t-if="cheque_format.ac_pay == True">
+							<span t-att-style="'font-size:' + str(cheque_format.ac_font_size) + 'px;'+'margin-top:' + str(cheque_format.ac_top_margin) + 'px;'+'margin-left:' + str(cheque_format.ac_left_margin) + 'px;'+'text-decoration: underline overline;'+'font-family: Palatino, serif;' + 'px;'"> A/C Pay </span>
+							</t>
+						</div>
+					</div>
+					<br/>
+					<div class="row col-12" t-att-style="'font-weight: bold;' + 'text-transform:uppercase;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;' + 'margin-left:65px;'" >
+						<div class="col-10 ac_pay">
+							<t t-if="cheque_format.sc_currency_name == True and cheque_format.sc_currency_name_position == 'before'"> 
+								<span  t-esc="payment.partner_id.company_id.currency_id.name" t-att-style="'font-size:' + str(cheque_format.af_font_size) + 'px;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;'+'margin-left:' + str(cheque_format.fl_left_margin) + 'px;'"/> 
+							</t>
+							<span t-if="get_amount_in_word_line(payment,cheque_format)">
+								<span t-esc="get_amount_in_word_line(payment,cheque_format)['first_line'] or ''"  t-att-style="'font-size:' + str(cheque_format.sc_font_size) + 'px;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;'+ 'px;'+'width:' + str(cheque_format.fl_width) + 'px;'"/>
+								<t t-if="cheque_format.sc_currency_name == True and cheque_format.sc_currency_name_position == 'after'"> 
+									<span  t-esc="payment.partner_id.company_id.currency_id.name" t-att-style="'font-size:' + str(cheque_format.af_font_size) + 'px;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;'+'margin-left:' + str(cheque_format.fl_left_margin) + 'px;'"/> 
+								</t>
+								<br/><br/>
+								<t t-if="get_amount_in_word_line(payment,cheque_format)['second_line']">
+									<span t-esc="get_amount_in_word_line(payment,cheque_format)['second_line']" t-att-style="'font-size:' + str(cheque_format.sc_font_size) + 'px;'+'margin-top:' + str(cheque_format.sc_top_margin) + 'px;'+'margin-left:' + str(cheque_format.sc_left_margin) + 'px;'+'width:' + str(cheque_format.sc_width) + 'px;'" />
+									<t t-if="cheque_format.sc_currency_name == True and cheque_format.sc_currency_name_position == 'after'"> 
+										<span  t-esc="payment.partner_id.company_id.currency_id.name" t-att-style="'font-size:' + str(cheque_format.af_font_size) + 'px;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;'+'margin-left:' + str(cheque_format.fl_left_margin) + 'px;'"/> 
+									</t>
+								</t>
+							</span>
+							<span t-if="not get_amount_in_word_line(payment,cheque_format)">
+								<span t-att-style="'font-size:' + str(cheque_format.sc_font_size) + 'px;'+'margin-top:' + str(cheque_format.fl_top_margin) + 'px;'+ 'px;'+'width:' + str(cheque_format.fl_width) + 'px;'"/>
+							</span>
+						</div>
+					</div>
+					<div class="row" t-att-style="'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+ 'font-weight: bold;'" >
+						<div class="col-12">  
+							<span t-esc="payment.partner_id.name" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'+'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+'margin-left:' + str(cheque_format.payee_left_margin) + 'px;'+'width:' + str(cheque_format.payee_width) + 'px;'"/><br />
+							<span t-esc="payment.partner_id.street" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'+'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+'margin-left:' + str(cheque_format.payee_left_margin) + 'px;'+'width:' + str(cheque_format.payee_width) + 'px;'"/>
+							<span t-if="payment.partner_id.street2">
+								<br />
+								<span t-esc="payment.partner_id.street2" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'+'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+'margin-left:' + str(cheque_format.payee_left_margin) + 'px;'+'width:' + str(cheque_format.payee_width) + 'px;'"/>
+							</span>
+							<br />
+							<span t-esc="payment.partner_id.city" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'+'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+'margin-left:' + str(cheque_format.payee_left_margin) + 'px;'+'width:' + str(cheque_format.payee_width) + 'px;'"/>&#160;,
+							<span t-esc="payment.partner_id.state_id.name" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'" />&#160;
+							<span t-esc="payment.partner_id.zip" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'"/>
+							<br />
+							<span t-esc="payment.partner_id.country_id.name" t-att-style="'font-size:' + str(cheque_format.payee_font_size) + 'px;'+'margin-top:' + str(cheque_format.payee_top_margin) + 'px;'+'margin-left:' + str(cheque_format.payee_left_margin) + 'px;'+'width:' + str(cheque_format.payee_width) + 'px;'"/>
+						</div>
+					</div>
+					<br/>
+					<div t-att-style="'margin-left:' + str(cheque_format.sb_left_margin) + 'px;' + ' width: 40%;' + 'margin-top:-70px;'">
+						<img t-att-src="'data:image/png;base64,%s' % to_text(cheque_format.sign_image_medium)" style="height:auto; max-width:40%;"/>
+					</div>
+					<div class="font_class" style="width:100%;text-align:center;margin-top:20px;">
+						<span class="font_value" t-esc="get_check_micr_font(cheque_format, payment)['first_line']" style="width: 100%;text-align: center;font-size:40px;"/>
+						<span class="font_value" t-esc="get_check_micr_font(cheque_format, payment)['second_line']" style="margin-left:-10px;width: 100%;text-align: center;font-size:40px;"/>
+					</div>
+				</div>
+	        </t>
+		</template>
+		<template id="report_dynamic_check_wiz">
+			<t t-call="web.html_container">
+				<t t-foreach="payment_ids" t-as="payment">
+					<div class="page">
+						<t t-call="generate_dynamic_cheque_app.dynamic_check_print_wiz"/>
+					</div>
+					<p style="page-break-before:always;"> </p>
+				</t>
+			</t>
+		</template>
+
+	    <record id="dynamic_cheque_print_report_action_wiz" model="ir.actions.report">
+	        <field name="name">Print Dynamic Cheque</field>
+	        <field name="model">account.payment</field>
+	        <field name="report_type">qweb-pdf</field>
+	        <field name="report_name">generate_dynamic_cheque_app.report_dynamic_check_wiz</field>
+	        <field name="report_file">generate_dynamic_cheque_app.report_dynamic_check_wiz</field>
+	        <field name="binding_model_id" ref=""/>
+	    </record>
+
+    </data>
+</odoo>
